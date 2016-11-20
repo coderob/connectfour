@@ -1,19 +1,21 @@
-import { Component, Input } from '@angular/core';
-import { Board } from './board';
+import { Component, Input, OnInit } from '@angular/core';
+import { Board, Player }            from './board';
 
 @Component({
 	selector: 'cf-board',
 	template: `
 		<h2>Board</h2>
-		<div class="board list-group">
-			<div *ngFor="let row of board.rows; let i=index" class="row">
-				<button
-					*ngFor="let cell of row; let j=index"
+		<div class="board">
+			<div *ngFor="let column of board.columns; let i=index"
+				class="column"
+				(click)="makeMove(i)"
+			>
+				<div
+					*ngFor="let cell of column; let j=index"
 					class="cell player-{{cell}} list-group-item"
-					(click)="makeMove(i, j)"
 				>
 					<small>r:{{i}},c:{{j}}</small>
-				</button>
+				</div>
 			</div>
 		</div>
 	`,
@@ -22,12 +24,19 @@ import { Board } from './board';
 			width: 70%;
 			margin: 2rem auto;
 		}
-		.board .row {
+		.board .column {
 			display: flex;
 			justify: content;
 			align-items: center;
+			padding: 3rem 0.2rem 1rem;
+			border-radius: 3px;
+			display:inline-block;
+			vertical-align:top;
 		}
-		.board .row .cell {
+		.board .column:hover {
+			background: #efefef;
+		}
+		.board .cell {
 			height: 7rem;
 			width: 7rem;
 			border-radius: 4rem;
@@ -36,15 +45,36 @@ import { Board } from './board';
 			background: #ff3b3f;
 		}
 		.board .player-2 {
-			background: #514a79;
+			background: #333333;
 		}
 	`]
 })
-export class BoardComponent {
-	@Input()
+export class BoardComponent implements OnInit {
 	board: Board;
+	player1: Player;
+	player2: Player;
+	currentMoveBy: Player;
 
-	makeMove (row: number, column: number) {
-		this.board.makeMove(row, column, 77);
+	makeMove (column: number) {
+		this.board.makeMove(column, this.currentMoveBy);
+		this.currentMoveBy = this.getNextPlayerToMove();
+	}
+
+	ngOnInit (): void {
+		this.board = new Board(5, 5);
+		this.player1 = new Player(1, "Player 1");
+		this.player2 = new Player(2, "Player 2");
+		this.currentMoveBy = this.player1;
+	}
+
+	private getNextPlayerToMove(): Player {
+		switch (this.currentMoveBy.id) {
+			case this.player1.id:
+				return this.player2;
+			case this.player2.id:
+				return this.player1;
+			default:
+				throw "Whoa! We can't determine whose move it is.";
+		}
 	}
 }
