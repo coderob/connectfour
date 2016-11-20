@@ -6,7 +6,12 @@ import { GameService, Move, MoveResult } from './game.service';
 	selector: 'cf-board',
 	template: `
 		<h2>
-			Board
+			<div *ngFor="let player of [ player1, player2 ]"
+				class="player"
+				[ngClass]="{ 'active': player == currentMoveBy }"
+			>
+				{{ player.name }}
+			</div>
 			<small [ngSwitch]="lastMoveResult">
 				<span *ngSwitchCase="moveResultTypes.GameContinues">Game in Progress</span>
 				<span *ngSwitchCase="moveResultTypes.GameWon">{{ currentMoveBy.name }} Wins!</span>
@@ -56,6 +61,17 @@ import { GameService, Move, MoveResult } from './game.service';
 		}
 		.board .player-2 {
 			background: #333333;
+		}
+		.player {
+			margin: 0.1em;
+			padding: 0.3em;
+		}
+		.player.active {
+			background: #dff0d8;
+			color: #3c763d;
+			border-radius: 3px;
+			border-right: 5px solid #fefefe;
+			border-bottom: 5px solid #fefefe;
 		}
 	`],
 	providers: [ GameService ],
