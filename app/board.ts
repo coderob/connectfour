@@ -132,6 +132,55 @@ export class Board {
 			}
 		}
 
+		// check for Up-Left diagonal connections
+		let hasConnection: boolean = true;
+		let consecutiveDiagonalSlots2 = 1;
+		let offset: number = 1;
+		// go down and right from the origin
+		while (hasConnection) {
+			let newRow    = row - offset;
+			let newColumn = column + offset;
+
+			let onBoard: boolean = newRow >= 0 && newColumn < this.numberOfColumns;
+			let lowerRightSlot: number = (onBoard) ? this.columns[newColumn][newRow] : null;
+			let match: boolean = (lowerRightSlot === player.id);
+			offset++;
+
+			if (match) {
+				consecutiveDiagonalSlots2++;
+
+				if (consecutiveDiagonalSlots2 === CONSECUTIVE_SLOTS_FOR_WIN) {
+					return true;
+				}
+			}
+			else {
+				hasConnection = false;
+			}
+		}
+		// go up and to the left of the origin
+		hasConnection = true;
+		offset = 1;
+		while (hasConnection) {
+			let newRow    = row + offset;
+			let newColumn = column - offset;
+
+			let onBoard: boolean = newRow < this.numberOfColumns && newColumn >= 0;
+			let lowerRightSlot: number = (onBoard) ? this.columns[newColumn][newRow] : null;
+			let match: boolean = (lowerRightSlot === player.id);
+			offset++;
+
+			if (match) {
+				consecutiveDiagonalSlots2++;
+
+				if (consecutiveDiagonalSlots2 === CONSECUTIVE_SLOTS_FOR_WIN) {
+					return true;
+				}
+			}
+			else {
+				hasConnection = false;
+			}
+		}
+
 		return false;
 	}
 }
