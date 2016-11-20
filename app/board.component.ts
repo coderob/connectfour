@@ -1,13 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Board, Player }            from './board';
+import { Component, Input, OnInit }  from '@angular/core';
+import { Board, Player, MoveResult } from './board';
 
 @Component({
 	selector: 'cf-board',
 	template: `
 		<h2>
 			Board
-			<small *ngIf="!board.isGameOver()">Game in Progress</small>
-			<small *ngIf="board.isGameOver()">Game Over!</small>
+			<small [ngSwitch]="lastMoveResult">
+				<span *ngSwitchCase="moveResultTypes.GameContinues">Game in Progress</span>
+				<span *ngSwitchCase="moveResultTypes.GameWon">{{ currentMoveBy.name }} Wins!</span>
+				<span *ngSwitchCase="moveResultTypes.GameTied">Game Over: You Tied!</span>
+				<span *ngSwitchCase="moveResultTypes.InvalidMove">Invalid Move</span>
+			</small>
 		</h2>
 		<div class="board">
 			<div *ngFor="let column of board.columns; let i=index"
@@ -18,7 +22,7 @@ import { Board, Player }            from './board';
 					*ngFor="let cell of column.slice().reverse(); let j=index"
 					class="cell player-{{cell}} list-group-item"
 				>
-					<small>r:{{i}},c:{{j}}</small>
+					<small>c:{{i}},r:{{4 - j}}</small>
 				</div>
 			</div>
 		</div>
@@ -56,13 +60,18 @@ import { Board, Player }            from './board';
 })
 export class BoardComponent implements OnInit {
 	board: Board;
+	moveResultTypes: typeof MoveResult = MoveResult;
 	player1: Player;
 	player2: Player;
 	currentMoveBy: Player;
+	lastMoveResult: MoveResult;
 
 	makeMove (column: number) {
-		this.board.makeMove(column, this.currentMoveBy);
-		this.currentMoveBy = this.getNextPlayerToMove();
+		this.lastMoveResult = this.board.makeMove(column, this.currentMoveBy);
+
+		if (this.lastMoveResult === MoveResult.GameContinues) {
+			this.currentMoveBy = this.getNextPlayerToMove();
+		}
 	}
 
 	ngOnInit (): void {

@@ -59,95 +59,79 @@ export class Board {
 		return retVal;
 	}
 
-	public makeMove (columnNumber: number, player: Player): void {
+	public makeMove (columnNumber: number, player: Player): MoveResult {
 		if (this.isBoardFull() || this.isColumnFull(columnNumber)) {
 			//  this is unexpected, TODO: probably worth preventing clicks when the game is over/board is full
 			console.debug(`Whoa! Column # ${columnNumber} is full`);
+			return MoveResult.InvalidMove;
 		}
 
 		let openRowIndex = this.getLastOpenRow(columnNumber);
 		this.columns[columnNumber][openRowIndex] = player.id;
 		this.moveCount++;
+
+		if (this.isBoardFull()) {
+			return MoveResult.GameTied;
+		}
+		if (this.isWin(columnNumber, openRowIndex, player)) {
+			return MoveResult.GameWon;
+		}
+
+		return MoveResult.GameContinues;
 	}
 
-	public winningPlayerIdentifier (): number {
-		// TODO : implement this
-		let consecutiveSlots = 0;
-		let potentialWinner = null;
-
-		// check for vertical wins
-		consecutiveSlots = 0;
-		potentialWinner = null;
+	public isWin (column: number, row: number, player: Player): boolean {
+		// check for horizontal connection
+		let consecutiveHorizontalSlots = 0;
 		for (let i:number = 0; i < this.numberOfColumns; i++) {
-			consecutiveSlots = 0;
-			for (let j:number = 0; j < this.numberOfRows - 1; j++) {
-				let cell = this.columns[i][j];
-				let cellAbove = this.columns[i][j-1];
+			if (this.columns[i][row] === player.id) {
+				consecutiveHorizontalSlots++;
 
-				if (cell) {
-					if (cell === potentialWinner) {
-						consecutiveSlots++;
+				if (consecutiveHorizontalSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
+					return true;
+				}
+			}
+			else {
+				consecutiveHorizontalSlots = 0;
+			}
+		}
 
-						if (consecutiveSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
-							return potentialWinner;
-						}
-					}
-					else {
-						potentialWinner = cell;
-						consecutiveSlots = 1;
-					}
+		// check for vertical connection
+		let consecutiveVerticalSlots = 0;
+		for (let i:number = 0; i < this.numberOfRows; i++) {
+			if (this.columns[column][i] === player.id) {
+				consecutiveVerticalSlots++;
+
+				if (consecutiveVerticalSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
+					return true;
+				}
+			}
+			else {
+				consecutiveVerticalSlots = 0;
+			}
+		}
+
+		// check for Up-Right diagonal connections
+		let rowOrigin: number    = (row - column > 0) ? row - column : 0;
+		let columnOrigin: number = (column - row > 0) ? column - row : 0;
+		let maxDiagonalSize: number = Math.max(column, row);
+		let consecutiveDiagonalSlots = 0;
+		for (let i:number = 0; i < maxDiagonalSize; i++) {
+			let onBoard: boolean = 
+				(columnOrigin + i) < this.numberOfColumns &&
+				(rowOrigin    + i) < this.numberOfRows;
+
+			let currentSlot: number = (onBoard) ? this.columns[columnOrigin + i][rowOrigin + i] : null;
+			let match: boolean = currentSlot === player.id;
+
+			if (match) {
+				consecutiveDiagonalSlots++;
+				if (consecutiveDiagonalSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
+					return true;
 				}
 			}
 		}
 
-		//check for horizontal wins
-		consecutiveSlots = 0;
-		potentialWinner = null;
-		for (let j:number = 0; j < this.numberOfRows; j++) {
-			for (let i: number = 0; i < this.numberOfColumns - 1; i++) {
-				let cell = this.columns[i][j];
-				let cellRight = this.columns[i+1][j];
-
-				if (cell) {
-					if (cell === potentialWinner) {
-						consecutiveSlots++;
-
-						if (consecutiveSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
-							return potentialWinner;
-						}
-					}
-					else {
-						potentialWinner = cell;
-						consecutiveSlots = 1;
-					}
-				}
-			}
-		}
-
-		consecutiveSlots = 0;
-		potentialWinner = null;
-		return null;
+		return false;
 	}
-
-	public isGameOver (): boolean {
-		return this.isBoardFull() || !!this.winningPlayerIdentifier();
-	}
-
-	// private isGameWon(playerIdentifier: number) {
-	// 	let consecutiveSlots = 0;
-
-	// 	//check vertical wins
-	// 	for (let i: number = 0; i < this.columns; i++) {
-	// 		this.board[i].forEach(element => {
-	// 			if (element === playerIdentifier) {
-	// 				consecutiveSlots++;
-	// 			}
-	// 			if (consecutiveSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
-	// 				return true;
-	// 			}
-	// 		});
-	// 	}
-
-	// 	return false;
-	// }
 }
