@@ -1,5 +1,6 @@
-import { Component, Input, OnInit }  from '@angular/core';
-import { Board, Player, MoveResult } from './board';
+import { Component, Input, OnInit }      from '@angular/core';
+import { Board, Player }                 from './board';
+import { GameService, Move, MoveResult } from './game.service';
 
 @Component({
 	selector: 'cf-board',
@@ -56,7 +57,8 @@ import { Board, Player, MoveResult } from './board';
 		.board .player-2 {
 			background: #333333;
 		}
-	`]
+	`],
+	providers: [ GameService ],
 })
 export class BoardComponent implements OnInit {
 	board: Board;
@@ -66,8 +68,12 @@ export class BoardComponent implements OnInit {
 	currentMoveBy: Player;
 	lastMoveResult: MoveResult;
 
+	constructor (private gameService: GameService) {
+	}
+
 	makeMove (column: number) {
-		this.lastMoveResult = this.board.makeMove(column, this.currentMoveBy);
+		let move: Move = new Move(column, null, this.currentMoveBy)
+		this.lastMoveResult = this.gameService.makeMove(this.board, move);
 
 		if (this.lastMoveResult === MoveResult.GameContinues) {
 			this.currentMoveBy = this.getNextPlayerToMove();
