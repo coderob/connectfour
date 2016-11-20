@@ -76,6 +76,8 @@ export class Board {
 		let potentialWinner = null;
 
 		// check for vertical wins
+		consecutiveSlots = 0;
+		potentialWinner = null;
 		for (let i:number = 0; i < this.numberOfColumns; i++) {
 			consecutiveSlots = 0;
 			for (let j:number = 0; j < this.numberOfRows - 1; j++) {
@@ -99,6 +101,8 @@ export class Board {
 		}
 
 		//check for horizontal wins
+		consecutiveSlots = 0;
+		potentialWinner = null;
 		for (let j:number = 0; j < this.numberOfRows; j++) {
 			for (let i: number = 0; i < this.numberOfColumns - 1; i++) {
 				let cell = this.columns[i][j];
