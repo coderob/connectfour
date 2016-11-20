@@ -24,31 +24,24 @@ export class Board {
 	private moveCount: number;
 	public readonly columns: number[][];
 
-	public get totalMoveCount() { return this.moveCount; }
-
 	constructor (rows: number, columns: number) {
 		this.numberOfRows = rows;
 		this.numberOfColumns = columns;
 		this.numberOfPossibleMoves = rows * columns;
+		this.moveCount = 0;
 
 		this.columns = [];
 		for (let i:number=0; i<columns; i++) {
 			this.columns[i] = new Array<number>(rows);
 		}
+	}
 
-		// DEBUGGING: make a couple of simulated moves
-		this.columns[1][4] = 1;
-		this.columns[2][4] = 2;
-		this.columns[2][3] = 2;
-		this.columns[3][4] = 1;
+	public isBoardFull (): boolean {
+		return this.moveCount >= this.numberOfPossibleMoves;
 	}
 
 	private isColumnFull (columnNumber: number): boolean {
 		return this.getLastOpenRow(columnNumber) == null;
-	}
-
-	private isBoardFull (): boolean {
-		return this.totalMoveCount >= this.numberOfPossibleMoves;
 	}
 
 	private getLastOpenRow (columnNumber): number {
@@ -66,7 +59,7 @@ export class Board {
 		return retVal;
 	}
 
-	public makeMove(columnNumber: number, player: Player): void {
+	public makeMove (columnNumber: number, player: Player): void {
 		if (this.isBoardFull() || this.isColumnFull(columnNumber)) {
 			//  this is unexpected, TODO: probably worth preventing clicks when the game is over/board is full
 			console.debug(`Whoa! Column # ${columnNumber} is full`);
@@ -75,6 +68,65 @@ export class Board {
 		let openRowIndex = this.getLastOpenRow(columnNumber);
 		this.columns[columnNumber][openRowIndex] = player.id;
 		this.moveCount++;
+	}
+
+	public winningPlayerIdentifier (): number {
+		// TODO : implement this
+		let consecutiveSlots = 0;
+		let potentialWinner = null;
+
+		// check for vertical wins
+		for (let i:number = 0; i < this.numberOfColumns; i++) {
+			consecutiveSlots = 0;
+			for (let j:number = this.numberOfRows-1; j >= 0; j--) {
+				let cell = this.columns[i][j];
+				let cellAbove = this.columns[i][j-1];
+
+				if (cell) {
+					if (cell === potentialWinner) {
+						consecutiveSlots++;
+
+						if (consecutiveSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
+							return potentialWinner;
+						}
+					}
+					else {
+						potentialWinner = cell;
+						consecutiveSlots = 1;
+					}
+				}
+			}
+		}
+
+		//check for horizontal wins
+		for (let j:number = this.numberOfRows - 1; j >= 0; j--) {
+			for (let i: number = 0; i < this.numberOfColumns - 1; i++) {
+				let cell = this.columns[i][j];
+				let cellRight = this.columns[i+1][j];
+
+				if (cell) {
+					if (cell === potentialWinner) {
+						consecutiveSlots++;
+
+						if (consecutiveSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
+							return potentialWinner;
+						}
+					}
+					else {
+						potentialWinner = cell;
+						consecutiveSlots = 1;
+					}
+				}
+			}
+		}
+
+		consecutiveSlots = 0;
+		potentialWinner = null;
+		return null;
+	}
+
+	public isGameOver (): boolean {
+		return this.isBoardFull() || !!this.winningPlayerIdentifier();
 	}
 
 	// private isGameWon(playerIdentifier: number) {

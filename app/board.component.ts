@@ -4,7 +4,11 @@ import { Board, Player }            from './board';
 @Component({
 	selector: 'cf-board',
 	template: `
-		<h2>Board</h2>
+		<h2>
+			Board
+			<small *ngIf="!board.isGameOver()">Game in Progress</small>
+			<small *ngIf="board.isGameOver()">Game Over!</small>
+		</h2>
 		<div class="board">
 			<div *ngFor="let column of board.columns; let i=index"
 				class="column"
@@ -32,6 +36,7 @@ import { Board, Player }            from './board';
 			border-radius: 3px;
 			display:inline-block;
 			vertical-align:top;
+			cursor: pointer;
 		}
 		.board .column:hover {
 			background: #efefef;
@@ -74,7 +79,7 @@ export class BoardComponent implements OnInit {
 			case this.player2.id:
 				return this.player1;
 			default:
-				throw "Whoa! We can't determine whose move it is.";
+				throw "Whoa! Something went wrong. We can't determine whose move it is.";
 		}
 	}
 }
