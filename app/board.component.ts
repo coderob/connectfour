@@ -15,7 +15,7 @@ import { Board, Player }            from './board';
 				(click)="makeMove(i)"
 			>
 				<div
-					*ngFor="let cell of column; let j=index"
+					*ngFor="let cell of column.slice().reverse(); let j=index"
 					class="cell player-{{cell}} list-group-item"
 				>
 					<small>r:{{i}},c:{{j}}</small>

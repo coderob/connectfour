@@ -49,7 +49,7 @@ export class Board {
 
 		// NOTE: Inversing the array traversal, since our game board "starts" 
 		// in the bottom left and is technically the last element in a single column array.
-		for (let i:number = this.columns[columnNumber].length - 1; i >= 0; i--) {
+		for (let i:number = 0; i < this.columns[columnNumber].length; i++) {
 			if (!this.columns[columnNumber][i]) {
 				retVal = i;
 				break;
@@ -78,7 +78,7 @@ export class Board {
 		// check for vertical wins
 		for (let i:number = 0; i < this.numberOfColumns; i++) {
 			consecutiveSlots = 0;
-			for (let j:number = this.numberOfRows-1; j >= 0; j--) {
+			for (let j:number = 0; j < this.numberOfRows - 1; j++) {
 				let cell = this.columns[i][j];
 				let cellAbove = this.columns[i][j-1];
 
@@ -99,7 +99,7 @@ export class Board {
 		}
 
 		//check for horizontal wins
-		for (let j:number = this.numberOfRows - 1; j >= 0; j--) {
+		for (let j:number = 0; j < this.numberOfRows; j++) {
 			for (let i: number = 0; i < this.numberOfColumns - 1; i++) {
 				let cell = this.columns[i][j];
 				let cellRight = this.columns[i+1][j];
