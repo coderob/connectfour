@@ -4,11 +4,18 @@ import { Board } from './board';
 export class Player {
 	id: number;
 	name: string;
+	type: PlayerType
 
-	constructor (id: number, name: string) {
+	constructor (id: number, name: string, type: PlayerType) {
 		this.id = id;
 		this.name = name;
+		this.type = type;
 	}
+}
+
+export enum PlayerType {
+	Human,
+	AI // Beware of Skynet
 }
 
 export class Move {
@@ -196,6 +203,19 @@ export class GameService {
 			}
 		}
 
+		return retVal;
+	}
+
+	public getAllOpenColumns (board: Board) {
+		let retVal: number[] = [];
+
+		let message;
+		board.columns.forEach((column: number[], index: number) => {
+			if (!this.isColumnFull(board, index)) {
+				retVal.push(index);
+				message += index + ", ";
+			}
+		});
 		return retVal;
 	}
 }

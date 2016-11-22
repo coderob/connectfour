@@ -1,6 +1,7 @@
 import { Component, Input, OnInit }                          from '@angular/core';
 import { Board }                                             from './board';
-import { GameService, Player, Move, MoveResult }             from './game.service';
+import { GameService, Player, PlayerType, Move, MoveResult } from './game.service';
+import { AIService }                                         from './ai.service';
 
 @Component({
 	selector: 'cf-board',
@@ -83,17 +84,30 @@ import { GameService, Player, Move, MoveResult }             from './game.servic
 			border-top: 1px solid #fefefe;
 		}
 	`],
-	providers: [ GameService ],
+	providers: [ GameService, AIService ],
 })
 export class BoardComponent implements OnInit {
 	board: Board;
 	moveResultTypes: typeof MoveResult = MoveResult;
 	player1: Player;
 	player2: Player;
-	currentMoveBy: Player;
 	lastMoveResult: MoveResult;
+	_currentMoveBy: Player;
 
-	constructor (private gameService: GameService) {
+	constructor (private gameService: GameService, private aiService: AIService) {
+	}
+
+	get currentMoveBy() {
+		return this._currentMoveBy;
+	}
+
+	set currentMoveBy(nextPlayerToMove: Player) {
+		this._currentMoveBy = nextPlayerToMove;
+
+		if (this.currentMoveBy.type == PlayerType.AI) {
+			let nextMoveIndex: number = this.aiService.getNextMove(this.board);
+			this.makeMove(this.aiService.getNextMove(this.board));
+		}
 	}
 
 	makeMove (column: number) {
@@ -107,8 +121,8 @@ export class BoardComponent implements OnInit {
 
 	ngOnInit (): void {
 		this.board = new Board(5, 5);
-		this.player1 = new Player(1, "Player 1");
-		this.player2 = new Player(2, "Player 2");
+		this.player1 = new Player(1, "Player 1", PlayerType.Human);
+		this.player2 = new Player(2, "Player 2", PlayerType.AI);
 		this.currentMoveBy = this.player1;
 	}
 
