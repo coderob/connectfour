@@ -16,4 +16,17 @@ export class Board {
 			this.columns[i] = new Array<number>(rows);
 		}
 	}
+
+	public print(): string {
+		let retVal: string = '';
+		for (let row:number=0; row<this.numberOfRows; row++) {
+			for (let col:number=0; col<this.numberOfColumns; col++) {
+				let value: number = this.columns[col][this.numberOfRows - row - 1]; // print rows in reverse order
+				let sValue: string = (value) ? value.toString() : '-';
+				retVal += sValue + '|';
+			}
+			retVal += '\n';
+		}
+		return retVal;
+	}
 }

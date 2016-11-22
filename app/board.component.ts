@@ -105,8 +105,8 @@ export class BoardComponent implements OnInit {
 		this._currentMoveBy = nextPlayerToMove;
 
 		if (this.currentMoveBy.type == PlayerType.AI) {
-			let nextMoveIndex: number = this.aiService.getNextMove(this.board);
-			this.makeMove(this.aiService.getNextMove(this.board));
+			let nextMoveIndex: number = this.aiService.getNextMove(this.board, nextPlayerToMove);
+			this.makeMove(this.aiService.getNextMove(this.board, nextPlayerToMove));
 		}
 	}
 

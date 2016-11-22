@@ -63,6 +63,18 @@ export class GameService {
 
 		return MoveResult.GameContinues;
 	}
+	
+	public simulateMove (board: Board, move: Move): MoveResult {
+		let row: number = this.getLastOpenRow(board, move.column);
+		let result = this.makeMove(board, move);
+		this.moveCount--; // this is kinda ugly and coupled; refactor this
+
+		if (result != MoveResult.InvalidMove) {
+			board.columns[move.column][row] = null;
+		}
+
+		return result;
+	}
 
 	public isWin (board: Board, move: Move): boolean {
 		return this.isHorizontalWin(board, move) ||
