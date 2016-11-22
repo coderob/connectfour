@@ -1,5 +1,15 @@
-import { Injectable }    from '@angular/core';
-import { Board, Player } from './board';
+import { Injectable } from '@angular/core';
+import { Board } from './board';
+
+export class Player {
+	id: number;
+	name: string;
+
+	constructor (id: number, name: string) {
+		this.id = id;
+		this.name = name;
+	}
+}
 
 export class Move {
 	column: number;
@@ -27,7 +37,7 @@ export class GameService {
 	private moveCount: number = 0;
 
 	public makeMove (board: Board, move: Move): MoveResult {
-		if (this.isColumnFull(board, move)) {
+		if (this.isColumnFull(board, move.column)) {
 			//  this may be unexpected, TODO: probably worth preventing clicks when the game is over/board is full
 			console.debug(`Whoa! Column # ${move.column} is full`);
 			return MoveResult.InvalidMove;
@@ -48,10 +58,6 @@ export class GameService {
 	}
 
 	public isWin (board: Board, move: Move): boolean {
-		let hor = this.isHorizontalWin(board, move);
-		let ver = this.isVerticalWin(board, move);
-		let fdiag = this.isForwardDiagonalWin(board, move);
-		let bdiag = this.isBackwardsDiagonalWin(board, move);
 		return this.isHorizontalWin(board, move) ||
 			this.isVerticalWin(board, move) ||
 			this.isForwardDiagonalWin(board, move) ||
@@ -176,8 +182,8 @@ export class GameService {
 		return this.moveCount >= board.numberOfPossibleMoves;
 	}
 
-	private isColumnFull (board: Board, move: Move): boolean {
-		return this.getLastOpenRow(board, move.column) == null;
+	private isColumnFull (board: Board, column: number): boolean {
+		return this.getLastOpenRow(board, column) == null;
 	}
 
 	private getLastOpenRow (board: Board, column: number): number {

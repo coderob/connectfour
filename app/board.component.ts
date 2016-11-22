@@ -1,23 +1,28 @@
-import { Component, Input, OnInit }      from '@angular/core';
-import { Board, Player }                 from './board';
-import { GameService, Move, MoveResult } from './game.service';
+import { Component, Input, OnInit }                          from '@angular/core';
+import { Board }                                             from './board';
+import { GameService, Player, Move, MoveResult }             from './game.service';
 
 @Component({
 	selector: 'cf-board',
+	// TODO : move this to an external component template
 	template: `
-		<h2>
-			<div *ngFor="let player of [ player1, player2 ]"
-				class="player"
-				[ngClass]="{ 'active': player == currentMoveBy }"
-			>
-				{{ player.name }}
+		<h2 class="jumbotron">
+			<div class="players">
+				<span *ngFor="let player of [ player1, player2 ]"
+					class="player"
+					[ngClass]="{ 'active': player == currentMoveBy }"
+				>
+					{{ player.name }}
+				</span>
 			</div>
-			<small [ngSwitch]="lastMoveResult">
-				<span *ngSwitchCase="moveResultTypes.GameContinues">Game in Progress</span>
-				<span *ngSwitchCase="moveResultTypes.GameWon">{{ currentMoveBy.name }} Wins!</span>
-				<span *ngSwitchCase="moveResultTypes.GameTied">Game Over: You Tied!</span>
-				<span *ngSwitchCase="moveResultTypes.InvalidMove">Invalid Move</span>
-			</small>
+			<div>
+				<small [ngSwitch]="lastMoveResult">
+					<span *ngSwitchCase="moveResultTypes.GameContinues">Game in Progress</span>
+					<span *ngSwitchCase="moveResultTypes.GameWon">{{ currentMoveBy.name }} Wins!</span>
+					<span *ngSwitchCase="moveResultTypes.GameTied">Game Over: You Tied!</span>
+					<span *ngSwitchCase="moveResultTypes.InvalidMove">Invalid Move</span>
+				</small>
+			</div>
 		</h2>
 		<div class="board">
 			<div *ngFor="let column of board.columns; let i=index"
@@ -33,6 +38,7 @@ import { GameService, Move, MoveResult } from './game.service';
 			</div>
 		</div>
 	`,
+	// TODO : move this to a component stylesheet
 	styles: [`
 		.board {
 			width: 70%;
@@ -62,6 +68,9 @@ import { GameService, Move, MoveResult } from './game.service';
 		.board .player-2 {
 			background: #333333;
 		}
+		.players {
+			margin-bottom: 1em;
+		}
 		.player {
 			margin: 0.1em;
 			padding: 0.3em;
@@ -69,9 +78,9 @@ import { GameService, Move, MoveResult } from './game.service';
 		.player.active {
 			background: #dff0d8;
 			color: #3c763d;
-			border-radius: 3px;
-			border-right: 5px solid #fefefe;
-			border-bottom: 5px solid #fefefe;
+			border-radius: 5px;
+			border-left: 1px solid #fefefe;
+			border-top: 1px solid #fefefe;
 		}
 	`],
 	providers: [ GameService ],

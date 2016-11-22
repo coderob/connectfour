@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Board, Player }     from './board';
 
 @Component({
 	selector: 'cf-root',
