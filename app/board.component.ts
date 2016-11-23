@@ -1,7 +1,7 @@
-import { Component, Input, OnInit }                          from '@angular/core';
-import { Board }                                             from './board';
-import { GameService, Player, PlayerType, Move, MoveResult } from './game.service';
-import { AIService }                                         from './ai.service';
+import { Component, Input, OnInit }                                              from '@angular/core';
+import { Board }                                                                 from './board';
+import { GameService, RulesConfiguration, Player, PlayerType, Move, MoveResult } from './game.service';
+import { AIService }                                                             from './ai.service';
 
 @Component({
 	selector: 'cf-board',
@@ -33,9 +33,7 @@ import { AIService }                                         from './ai.service'
 				<div
 					*ngFor="let cell of column.slice().reverse(); let j=index"
 					class="cell player-{{cell}} list-group-item"
-				>
-					<small>c:{{i}},r:{{4 - j}}</small>
-				</div>
+				></div>
 			</div>
 		</div>
 	`,
@@ -120,7 +118,7 @@ export class BoardComponent implements OnInit {
 	}
 
 	ngOnInit (): void {
-		this.board = new Board(5, 5);
+		this.board = new Board(RulesConfiguration.NUMBER_OF_ROWS, RulesConfiguration.NUMBER_OF_COLUMNS);
 		this.player1 = new Player(1, "Player 1", PlayerType.Human);
 		this.player2 = new Player(2, "Player 2", PlayerType.AI);
 		this.currentMoveBy = this.player1;

@@ -39,7 +39,27 @@ exports.Move = Move;
     MoveResult[MoveResult["GameContinues"] = 3] = "GameContinues";
 })(exports.MoveResult || (exports.MoveResult = {}));
 var MoveResult = exports.MoveResult;
-exports.CONSECUTIVE_SLOTS_FOR_WIN = 4;
+var RulesConfiguration = (function () {
+    function RulesConfiguration() {
+    }
+    Object.defineProperty(RulesConfiguration, "NUMBER_OF_COLUMNS", {
+        get: function () { return 7; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RulesConfiguration, "NUMBER_OF_ROWS", {
+        get: function () { return 6; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RulesConfiguration, "CONSECUTIVE_SLOTS_FOR_WIN", {
+        get: function () { return 4; },
+        enumerable: true,
+        configurable: true
+    });
+    return RulesConfiguration;
+}());
+exports.RulesConfiguration = RulesConfiguration;
 var GameService = (function () {
     function GameService() {
         this.moveCount = 0;
@@ -82,7 +102,7 @@ var GameService = (function () {
         for (var i = 0; i < board.numberOfColumns; i++) {
             if (board.columns[i][move.row] === move.player.id) {
                 consecutiveHorizontalSlots++;
-                if (consecutiveHorizontalSlots === exports.CONSECUTIVE_SLOTS_FOR_WIN) {
+                if (consecutiveHorizontalSlots === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
                     retVal = true;
                     break;
                 }
@@ -99,7 +119,7 @@ var GameService = (function () {
         for (var i = 0; i < board.numberOfRows; i++) {
             if (board.columns[move.column][i] === move.player.id) {
                 consecutiveVerticalSlots++;
-                if (consecutiveVerticalSlots === exports.CONSECUTIVE_SLOTS_FOR_WIN) {
+                if (consecutiveVerticalSlots === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
                     retVal = true;
                     break;
                 }
@@ -123,7 +143,7 @@ var GameService = (function () {
             var match = currentSlot === move.player.id;
             if (match) {
                 consecutiveDiagonalSlots++;
-                if (consecutiveDiagonalSlots === exports.CONSECUTIVE_SLOTS_FOR_WIN) {
+                if (consecutiveDiagonalSlots === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
                     retVal = true;
                     break;
                 }
@@ -145,7 +165,7 @@ var GameService = (function () {
             offset++;
             if (match) {
                 consecutiveDiagonalSlots2++;
-                if (consecutiveDiagonalSlots2 === exports.CONSECUTIVE_SLOTS_FOR_WIN) {
+                if (consecutiveDiagonalSlots2 === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
                     return true;
                 }
             }
@@ -165,7 +185,7 @@ var GameService = (function () {
             offset++;
             if (match) {
                 consecutiveDiagonalSlots2++;
-                if (consecutiveDiagonalSlots2 === exports.CONSECUTIVE_SLOTS_FOR_WIN) {
+                if (consecutiveDiagonalSlots2 === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
                     return true;
                 }
             }
