@@ -37,7 +37,11 @@ export enum MoveResult {
 	GameContinues
 }
 
-export const CONSECUTIVE_SLOTS_FOR_WIN = 4;
+export class RulesConfiguration {
+	public static get NUMBER_OF_COLUMNS()         { return 7; }
+	public static get NUMBER_OF_ROWS()            { return 6; }
+	public static get CONSECUTIVE_SLOTS_FOR_WIN() { return 4; }
+}
 
 @Injectable()
 export class GameService {
@@ -89,7 +93,7 @@ export class GameService {
 		for (let i:number = 0; i < board.numberOfColumns; i++) {
 			if (board.columns[i][move.row] === move.player.id) {
 				consecutiveHorizontalSlots++;
-				if (consecutiveHorizontalSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
+				if (consecutiveHorizontalSlots === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
 					retVal = true;
 					break;
 				}
@@ -108,7 +112,7 @@ export class GameService {
 			if (board.columns[move.column][i] === move.player.id) {
 				consecutiveVerticalSlots++;
 
-				if (consecutiveVerticalSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
+				if (consecutiveVerticalSlots === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
 					retVal = true;
 					break;
 				}
@@ -136,7 +140,7 @@ export class GameService {
 
 			if (match) {
 				consecutiveDiagonalSlots++;
-				if (consecutiveDiagonalSlots === CONSECUTIVE_SLOTS_FOR_WIN) {
+				if (consecutiveDiagonalSlots === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
 					retVal = true;
 					break;
 				}
@@ -162,7 +166,7 @@ export class GameService {
 			if (match) {
 				consecutiveDiagonalSlots2++;
 
-				if (consecutiveDiagonalSlots2 === CONSECUTIVE_SLOTS_FOR_WIN) {
+				if (consecutiveDiagonalSlots2 === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
 					return true;
 				}
 			}
@@ -185,7 +189,7 @@ export class GameService {
 			if (match) {
 				consecutiveDiagonalSlots2++;
 
-				if (consecutiveDiagonalSlots2 === CONSECUTIVE_SLOTS_FOR_WIN) {
+				if (consecutiveDiagonalSlots2 === RulesConfiguration.CONSECUTIVE_SLOTS_FOR_WIN) {
 					return true;
 				}
 			}
