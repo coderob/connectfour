@@ -25,8 +25,8 @@ var BoardComponent = (function () {
         set: function (nextPlayerToMove) {
             this._currentMoveBy = nextPlayerToMove;
             if (this.currentMoveBy.type == game_service_1.PlayerType.AI) {
-                var nextMoveIndex = this.aiService.getNextMove(this.board, nextPlayerToMove);
-                this.makeMove(this.aiService.getNextMove(this.board, nextPlayerToMove));
+                var nextMoveIndex = this.aiService.getNextMove(this.board, nextPlayerToMove, this.lastMoveBy);
+                this.makeMove(nextMoveIndex);
             }
         },
         enumerable: true,
@@ -35,6 +35,7 @@ var BoardComponent = (function () {
     BoardComponent.prototype.makeMove = function (column) {
         var move = new game_service_1.Move(column, null, this.currentMoveBy);
         this.lastMoveResult = this.gameService.makeMove(this.board, move);
+        this.lastMoveBy = move.player;
         if (this.lastMoveResult === game_service_1.MoveResult.GameContinues) {
             this.currentMoveBy = this.getNextPlayerToMove();
         }

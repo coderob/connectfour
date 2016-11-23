@@ -90,6 +90,7 @@ export class BoardComponent implements OnInit {
 	player1: Player;
 	player2: Player;
 	lastMoveResult: MoveResult;
+	lastMoveBy: Player;
 	_currentMoveBy: Player;
 
 	constructor (private gameService: GameService, private aiService: AIService) {
@@ -103,14 +104,15 @@ export class BoardComponent implements OnInit {
 		this._currentMoveBy = nextPlayerToMove;
 
 		if (this.currentMoveBy.type == PlayerType.AI) {
-			let nextMoveIndex: number = this.aiService.getNextMove(this.board, nextPlayerToMove);
-			this.makeMove(this.aiService.getNextMove(this.board, nextPlayerToMove));
+			let nextMoveIndex: number = this.aiService.getNextMove(this.board, nextPlayerToMove, this.lastMoveBy);
+			this.makeMove(nextMoveIndex);
 		}
 	}
 
 	makeMove (column: number) {
 		let move: Move = new Move(column, null, this.currentMoveBy)
 		this.lastMoveResult = this.gameService.makeMove(this.board, move);
+		this.lastMoveBy = move.player;
 
 		if (this.lastMoveResult === MoveResult.GameContinues) {
 			this.currentMoveBy = this.getNextPlayerToMove();

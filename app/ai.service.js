@@ -17,40 +17,23 @@ var AIService = (function () {
     function AIService(gameService) {
         this.gameService = gameService;
     }
-    AIService.prototype.getNextMove = function (board, player) {
-        var availableMoves = this.gameService.getAllOpenColumns(board);
-        return this.getBestMove(board, availableMoves, player);
-        // return this.getRandomMove(board, availableMoves);
+    AIService.prototype.getNextMove = function (board, player, opponent) {
+        return this.getBestMove(board, player, opponent);
+        // return this.getRandomMove(board);
     };
-    AIService.prototype.getRandomMove = function (board, availableMoves) {
-        return ArrayUtilities.getRandomElement(availableMoves);
+    AIService.prototype.getRandomMove = function (board) {
+        var openColumns = this.gameService.getAllOpenColumns(board);
+        return ArrayUtilities.getRandomElement(openColumns);
     };
-    AIService.prototype.getBestMove = function (board, availableMoves, player) {
-        var winningMoves = [];
-        var continuingMoves = [];
-        var tyingMoves = [];
-        for (var i = 0; i < availableMoves.length; i++) {
-            var move = new game_service_1.Move(availableMoves[i], null, player);
-            var result = this.gameService.simulateMove(board, move);
-            switch (result) {
-                case game_service_1.MoveResult.GameWon:
-                    // You could alternatively short-circuit on any winning move here as well
-                    winningMoves.push(move.column);
-                    break;
-                case game_service_1.MoveResult.GameContinues:
-                    continuingMoves.push(move.column);
-                    break;
-                case game_service_1.MoveResult.GameTied:
-                    tyingMoves.push(move.column);
-                    break;
-                default:
-                    throw "Unhandled result: " + result;
-            }
-        }
-        // The best moves are (in order): Winning Moves, Game Continuing Moves, Game Tying Moves
-        var movesetOfChoice = (winningMoves.length) ? winningMoves :
-            (continuingMoves.length) ? continuingMoves :
-                tyingMoves;
+    AIService.prototype.getBestMove = function (board, player, opponent) {
+        var aiMoves = this.gameService.getAvailableMoves(board, player);
+        var opponentMoves = this.gameService.getAvailableMoves(board, opponent);
+        var blockingMoves = opponentMoves.winningMoves;
+        // The best moves are (in order): Winning Moves, Blocking Moves, Game Continuing Moves, Game Tying Moves
+        var movesetOfChoice = (aiMoves.winningMoves.length) ? aiMoves.winningMoves :
+            (blockingMoves.length) ? blockingMoves :
+                (aiMoves.continuingMoves.length) ? aiMoves.continuingMoves :
+                    aiMoves.tyingMoves;
         return ArrayUtilities.getRandomElement(movesetOfChoice);
     };
     AIService = __decorate([

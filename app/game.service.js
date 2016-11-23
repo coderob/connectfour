@@ -39,6 +39,15 @@ exports.Move = Move;
     MoveResult[MoveResult["GameContinues"] = 3] = "GameContinues";
 })(exports.MoveResult || (exports.MoveResult = {}));
 var MoveResult = exports.MoveResult;
+var AvailableMoves = (function () {
+    function AvailableMoves(winningMoves, continuingMoves, tyingMoves) {
+        this.winningMoves = winningMoves;
+        this.continuingMoves = continuingMoves;
+        this.tyingMoves = tyingMoves;
+    }
+    return AvailableMoves;
+}());
+exports.AvailableMoves = AvailableMoves;
 var RulesConfiguration = (function () {
     function RulesConfiguration() {
     }
@@ -222,6 +231,31 @@ var GameService = (function () {
             }
         });
         return retVal;
+    };
+    GameService.prototype.getAvailableMoves = function (board, player) {
+        var openColumns = this.getAllOpenColumns(board);
+        var winningMoves = [];
+        var continuingMoves = [];
+        var tyingMoves = [];
+        for (var i = 0; i < openColumns.length; i++) {
+            var move = new Move(openColumns[i], null, player);
+            var result = this.simulateMove(board, move);
+            switch (result) {
+                case MoveResult.GameWon:
+                    // You could alternatively short-circuit on any winning move here as well
+                    winningMoves.push(move.column);
+                    break;
+                case MoveResult.GameContinues:
+                    continuingMoves.push(move.column);
+                    break;
+                case MoveResult.GameTied:
+                    tyingMoves.push(move.column);
+                    break;
+                default:
+                    throw "Unhandled result: " + result;
+            }
+        }
+        return new AvailableMoves(winningMoves, continuingMoves, tyingMoves);
     };
     GameService = __decorate([
         core_1.Injectable(), 

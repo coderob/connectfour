@@ -37,6 +37,18 @@ export enum MoveResult {
 	GameContinues
 }
 
+export class AvailableMoves {
+	winningMoves: number[];
+	continuingMoves: number[];
+	tyingMoves: number[];
+
+	constructor (winningMoves: number[], continuingMoves: number[], tyingMoves: number[]) {
+		this.winningMoves = winningMoves;
+		this.continuingMoves = continuingMoves;
+		this.tyingMoves = tyingMoves;
+	}
+}
+
 export class RulesConfiguration {
 	public static get NUMBER_OF_COLUMNS()         { return 7; }
 	public static get NUMBER_OF_ROWS()            { return 6; }
@@ -233,5 +245,35 @@ export class GameService {
 			}
 		});
 		return retVal;
+	}
+
+	public getAvailableMoves(board: Board, player: Player): AvailableMoves {
+		let openColumns: number[] = this.getAllOpenColumns(board);
+
+		let winningMoves: number[] = [];
+		let continuingMoves: number[] = [];
+		let tyingMoves: number[] = [];
+
+		for (let i:number = 0; i < openColumns.length; i++) {
+			let move: Move = new Move(openColumns[i], null, player);
+			let result: MoveResult = this.simulateMove(board, move);
+
+			switch (result) {
+				case MoveResult.GameWon:
+					// You could alternatively short-circuit on any winning move here as well
+					winningMoves.push(move.column);
+					break;
+				case MoveResult.GameContinues:
+					continuingMoves.push(move.column);
+					break;
+				case MoveResult.GameTied:
+					tyingMoves.push(move.column);
+					break;
+				default:
+					throw `Unhandled result: ${result}`;
+			}
+		}
+
+		return new AvailableMoves(winningMoves, continuingMoves, tyingMoves);
 	}
 }

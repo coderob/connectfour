@@ -1,6 +1,6 @@
-import { Injectable, Inject }                    from '@angular/core';
-import { Board }                                 from './board';
-import { GameService, Player, Move, MoveResult } from './game.service';
+import { Injectable, Inject }                                    from '@angular/core';
+import { Board }                                                 from './board';
+import { GameService, Player, Move, MoveResult, AvailableMoves } from './game.service';
 
 
 @Injectable()
@@ -8,47 +8,27 @@ export class AIService {
 	constructor (@Inject(GameService) private gameService: GameService) {
 	}
 
-	public getNextMove(board: Board, player: Player): number {
-		let availableMoves: number[] = this.gameService.getAllOpenColumns(board);
-
-		return this.getBestMove(board, availableMoves, player);
-		// return this.getRandomMove(board, availableMoves);
+	public getNextMove(board: Board, player: Player, opponent: Player): number {
+		return this.getBestMove(board, player, opponent);
+		// return this.getRandomMove(board);
 	}
 
-	private getRandomMove(board: Board, availableMoves: number[]): number {
-		return ArrayUtilities.getRandomElement(availableMoves);
+	private getRandomMove(board: Board): number {
+		let openColumns: number[] = this.gameService.getAllOpenColumns(board);
+		return ArrayUtilities.getRandomElement(openColumns);
 	}
 
-	private getBestMove(board: Board, availableMoves: number[], player: Player): number {
-		let winningMoves: number[]    = [];
-		let continuingMoves: number[] = [];
-		let tyingMoves: number[]      = [];
-		
-		for (let i:number = 0; i < availableMoves.length; i++) {
-			let move: Move = new Move(availableMoves[i], null, player);
-			let result: MoveResult = this.gameService.simulateMove(board, move);
+	private getBestMove(board: Board, player: Player, opponent: Player): number {
+		let aiMoves: AvailableMoves = this.gameService.getAvailableMoves(board, player);
+		let opponentMoves:AvailableMoves = this.gameService.getAvailableMoves(board, opponent);
+		let blockingMoves: number[] = opponentMoves.winningMoves;
 
-			switch (result) {
-				case MoveResult.GameWon:
-					// You could alternatively short-circuit on any winning move here as well
-					winningMoves.push(move.column);
-					break;
-				case MoveResult.GameContinues:
-					continuingMoves.push(move.column);
-					break;
-				case MoveResult.GameTied:
-					tyingMoves.push(move.column);
-					break;
-				default:
-					throw `Unhandled result: ${result}`;
-			}
-		}
-
-		// The best moves are (in order): Winning Moves, Game Continuing Moves, Game Tying Moves
+		// The best moves are (in order): Winning Moves, Blocking Moves, Game Continuing Moves, Game Tying Moves
 		let movesetOfChoice: number[] = 
-			(winningMoves.length)    ? winningMoves :
-			(continuingMoves.length) ? continuingMoves :
-			tyingMoves;
+			(aiMoves.winningMoves.length)    ? aiMoves.winningMoves :
+			(blockingMoves.length)           ? blockingMoves :
+			(aiMoves.continuingMoves.length) ? aiMoves.continuingMoves :
+			aiMoves.tyingMoves;
 		return ArrayUtilities.getRandomElement(movesetOfChoice);
 	}
 }
