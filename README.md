@@ -1,5 +1,7 @@
 # Connect Four
 
+**See it Live:** [demo]
+
 Connect Four game with the following characteristics:
 
 Technologies Used:
@@ -30,5 +32,6 @@ Make sure you have [Node][node] and [NPM][npm] installed.
    npm start
    ```
 
+[demo]: https://coderob-connectfour.herokuapp.com/
 [node]: https://nodejs.org/en/
 [npm]: https://www.npmjs.com/
